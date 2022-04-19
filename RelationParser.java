@@ -12,7 +12,7 @@ public class RelationParser {
 	/* Parses and returns the name of the relation to create */
     public String parseRelationName() {
         Scanner scan = new Scanner(this.input); 
-        String relName = scan.next();
+        String relName = scan.next();       // first token should contain relation name
 
         scan.close();
 
@@ -22,27 +22,27 @@ public class RelationParser {
 	/* Parses and returns the number of attributes to create */
     public int parseAttributeCount() {
         Scanner scan = new Scanner(this.input);
-        String currTok;
-        int numOfAtt = 0;
-        scan.next();
-        currTok = scan.next();
+        String currTok;                     // stores current token
+        int numOfAtt = 0;                   // stores total number of attributes
+        scan.next();                        // skip relation name
+        currTok = scan.next();              // get first attribute
 
-        if (currTok.charAt(0) == '(')
+        if (currTok.charAt(0) == '(')       // test correct relation syntax ("(")
         {
-            while(scan.hasNext())
+            while(scan.hasNext())           // while more relations are avalible 
             {
-                currTok = scan.next();
-                if (currTok.contains(","))
+                currTok = scan.next();      // get net relation
+                if (currTok.contains(","))  // test for correct syntax (",")
                     ++numOfAtt;
             }
         }
 
-        if (currTok.charAt(currTok.length()-1) == ')')
+        if (currTok.charAt(currTok.length()-1) == ')') // test for correct syntax (")")
             numOfAtt++;
         else
-            numOfAtt = -1;
+            numOfAtt = -1;                  // if syntax is incorrect, return error state
 
-        scan.close();
+        scan.close();                       // reserve system resources
         
         return numOfAtt;
     }

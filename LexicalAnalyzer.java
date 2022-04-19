@@ -8,24 +8,24 @@ public class LexicalAnalyzer {
     public void run(String fileName) throws FileNotFoundException{
       File file = new File(fileName);
       Scanner scan = new Scanner(file);
-      String currTotCmd = "";
-      String currTok;
+      String currTotCmd = "";                                 // stores total command until semicolon is found
+      String currTok;                                         // current token in command parse
 
-      while (scan.hasNext())
+      while (scan.hasNext())                                  // while more tokens are avalible
       {
-        currTok = scan.next();
+        currTok = scan.next();                                // skip whitespace to first token
 
-        if (currTok.charAt(0) == '#')
+        if (currTok.charAt(0) == '#')                         // if first char of first token is comment syntax
         {
-          scan.nextLine();
+          scan.nextLine();                                    // then skip line
           continue;
         }
         
-        currTotCmd = currTotCmd.concat(" ".concat(currTok));
-        if (currTok.contains(";"))
+        currTotCmd = currTotCmd.concat(" ".concat(currTok));  // if not a command, begin adding tokens to currTotCmd
+        if (currTok.contains(";"))                            // if semicolon is hit
         {
-            exeCmd(currTotCmd);
-            currTotCmd = "";
+            exeCmd(currTotCmd);                               // test command and attempt to execute
+            currTotCmd = "";                                  // reset currTotCmd for next command
         }
       }
 
@@ -34,9 +34,9 @@ public class LexicalAnalyzer {
 
     private static void exeCmd(String cmd)
     {
-      Scanner scan = new Scanner(cmd);
-      String cmdName = scan.next();
-      String cmdParams = cmd.substring(cmdName.length()+2, cmd.length()-1);
+      Scanner scan = new Scanner(cmd);                        // setup scanner to tokenize command
+      String cmdName = scan.next();                           // first token should be command name
+      String cmdParams = cmd.substring(cmdName.length()+2, cmd.length()-1); // remove command name to get string only containing paramenters
 
       if (cmdName.equals("RELATION"))
       {

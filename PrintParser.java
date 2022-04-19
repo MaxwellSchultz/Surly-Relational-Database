@@ -14,20 +14,20 @@ public class PrintParser {
     public String[] parseRelationNames() {
         Scanner scan = new Scanner(this.input);
         LinkedList<String> relNames = new LinkedList<>();
-        String currTok;
+        String currTok;                                                 // stores current token
 
-        while (scan.hasNext())
+        while (scan.hasNext())                                          // while more tokens are avalible 
         {
-            currTok = scan.next();
-            if (currTok.charAt(currTok.length() - 1) == ',')
+            currTok = scan.next();          
+            if (currTok.charAt(currTok.length() - 1) == ',')            // if syntax is corrent and tokens are seperated by (",")
             {
-                currTok = currTok.substring(0, currTok.length()-1);
+                currTok = currTok.substring(0, currTok.length()-1);     // remove comma
             }
-            relNames.add(currTok);
+            relNames.add(currTok);                                      // add it to list
         }
 
         scan.close();
 
-        return relNames.toArray(new String[relNames.size()]);
+        return relNames.toArray(new String[relNames.size()]);           // convert list to array to return
     }
 }
