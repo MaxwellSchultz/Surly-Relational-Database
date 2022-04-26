@@ -4,6 +4,11 @@ public class SurlyDatabase {
 	/* Collection of relations in the database */
 	private LinkedList<Relation> relations;
 
+	public SurlyDatabase()
+	{
+		relations = new LinkedList<>();
+	}
+
 	/* Returns the relation with the specified name */
 	public Relation getRelation(String name) {
 		

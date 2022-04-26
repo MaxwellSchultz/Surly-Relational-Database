@@ -46,7 +46,7 @@ public class LexicalAnalyzer {
         RelationParser rp = new RelationParser(cmdParams);
         db.createRelation(rp.parseRelation());
 
-        Relation printRel = db.getRelation("TEST");
+        Relation printRel = db.getRelation("COURSE");
 
         printRel.print();
       }
