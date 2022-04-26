@@ -6,6 +6,18 @@ public class SurlyDatabase {
 
 	/* Returns the relation with the specified name */
 	public Relation getRelation(String name) {
+		
+		Relation currRel;
+		
+		for (int i = 0; i < relations.size(); ++i)
+		{
+			currRel = relations.get(i);
+			if (currRel.testPrinter().equals(name))
+			{
+				return currRel;
+			}
+		}
+		
 		return null;
 	}
 
@@ -16,6 +28,6 @@ public class SurlyDatabase {
 
 	/* Adds the given relation to the database */
 	public void createRelation(Relation relation) {
-		
+		relations.add(relation);
 	}
 }

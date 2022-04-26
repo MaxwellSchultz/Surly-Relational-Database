@@ -8,6 +8,9 @@ public class LexicalAnalyzer {
     public void run(String fileName) throws FileNotFoundException{
       File file = new File(fileName);
       Scanner scan = new Scanner(file);
+
+      SurlyDatabase db = new SurlyDatabase();
+
       String currTotCmd = "";                                 // stores total command until semicolon is found
       String currTok;                                         // current token in command parse
 
@@ -24,7 +27,7 @@ public class LexicalAnalyzer {
         currTotCmd = currTotCmd.concat(" ".concat(currTok));  // if not a command, begin adding tokens to currTotCmd
         if (currTok.contains(";"))                            // if semicolon is hit
         {
-            exeCmd(currTotCmd);                               // test command and attempt to execute
+            exeCmd(currTotCmd, db);                               // test command and attempt to execute
             currTotCmd = "";                                  // reset currTotCmd for next command
         }
       }
@@ -32,7 +35,7 @@ public class LexicalAnalyzer {
       scan.close();
     }
 
-    private static void exeCmd(String cmd)
+    private static void exeCmd(String cmd, SurlyDatabase db)
     {
       Scanner scan = new Scanner(cmd);                        // setup scanner to tokenize command
       String cmdName = scan.next();                           // first token should be command name
@@ -41,11 +44,11 @@ public class LexicalAnalyzer {
       if (cmdName.equals("RELATION"))
       {
         RelationParser rp = new RelationParser(cmdParams);
-        int attCount = rp.parseAttributeCount();
-        if (attCount > 0)
-          System.out.println("Creating " + rp.parseRelationName() + " with " + rp.parseAttributeCount() + " attributes");
-        else
-          System.out.println("Incorrect syntax for RELATION command. Please use \"()");
+        db.createRelation(rp.parseRelation());
+
+        Relation printRel = db.getRelation("TEST");
+
+        printRel.print();
       }
       else if (cmdName.equals("INSERT"))
       {
