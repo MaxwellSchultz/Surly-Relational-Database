@@ -17,21 +17,32 @@ public class RelationParser {
         String relSet = "";                                  // contains values needed for one attribute in schema
         LinkedList<String> relEle = new LinkedList<>(); // stores the elements and their attributes of the schema
         Relation returnRel;                              
-        int numOfAtt = 0;                               // stores total number of attributes
         String relName = scan.next();                   // get relation name
         currTok = scan.next();                          // get first attribute
 
         if (currTok.charAt(0) == '(')                   // test correct relation syntax ("(")
         {
+            currTok = currTok.substring(1,currTok.length());    // cut off ("(") and begin getting initial attribute
+            relSet += currTok + " ";                            // add name to attribute
+            currTok = scan.next();                              // get data type
+            relSet += currTok + " ";                            // add data type to attribute 
+            currTok = scan.next();                              // get length
+            currTok = currTok.substring(0, currTok.length()-1); // remove (",") or (")")
+            relSet += currTok;                                  // add length to attribute
+            relEle.add(relSet);                                 // add attruibute to attribute list 
+            relSet = "";                                        // reset string
+
             while(scan.hasNext())                       // while more relations are avalible 
             {
-                currTok = scan.next();                  // get net relation
+                currTok = scan.next();                  // get next name
                 relSet += currTok + " ";
-                if (currTok.contains(","))              // test for correct syntax (",")
-                {
-                    relSet += currTok.substring(0, currTok.length()-1);
-                    relEle.add(relSet);
-                }
+                currTok = scan.next();                  // get next type
+                relSet += currTok + " ";
+                currTok = scan.next();                  // get next length
+                relSet += currTok.substring(0, currTok.length()-1); // removed (",") and (")")
+             
+                relEle.add(relSet);
+                relSet = "";
             }
         }
 
@@ -42,6 +53,7 @@ public class RelationParser {
         return returnRel;
     }
 
+    // Generates a new relations using name and list of attributes split into tokens
     private Relation generateRelation(String relName, LinkedList<String> relEle)
     {
         LinkedList<Attribute> attr = new LinkedList<>(); 
@@ -50,16 +62,20 @@ public class RelationParser {
         int length;
         Scanner scan;
 
-        for (int i = 0; i < relEle.size(); ++i)
+        for (int i = 0; i < relEle.size(); ++i) // for all attributes
         {
             scan = new Scanner(relEle.get(i));
-            name = scan.next();
-            dataType = scan.next();
-            System.out.println(scan.next());
-            length = 10;
+            name = scan.next();                 // get name
+            System.out.println(name);
+            dataType = scan.next();             // get data type
+            System.out.println(dataType);
+            length = scan.nextInt();            // get length
+            System.out.println(length);
 
+            // att to schema
             attr.add(new Attribute());
 
+            // set values
             attr.get(i).setName(name);
             attr.get(i).setDataType(dataType);
             attr.get(i).setLength(length);
@@ -67,6 +83,7 @@ public class RelationParser {
             scan.close();
         }
 
+        // return relation, by generating new relation
         Relation returnRel = new Relation(relName, attr);
 
         return returnRel;

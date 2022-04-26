@@ -51,11 +51,13 @@ public class Relation {
 
 			System.out.print("| ");
 			System.out.print(currAtt.getName());
-			printSpace(currAtt.getLength()-currAtt.getName().length()-1);
-			System.out.println("|");
+			printSpace(currAtt.getLength()-currAtt.getName().length());
 		}
 
+		System.out.print(" |");
+		System.out.println();
 		printLines(totalLen);
+		System.out.println();
 
 	}
 
