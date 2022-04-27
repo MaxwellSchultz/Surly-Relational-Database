@@ -110,6 +110,7 @@ public class LexicalAnalyzer {
         if (currRel != null)
         {
           db.destroyRelation(currRel.getName());
+          db.getRelation("CATALOG").removeElement(currRel.getName());
         }
         else
         {

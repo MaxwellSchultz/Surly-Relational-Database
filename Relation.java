@@ -58,6 +58,18 @@ public class Relation {
 		tuples = new LinkedList<>();
 	}
 
+	public void removeElement(String eleName)
+	{
+		for (int i = 0; i < tuples.size(); ++i)
+		{
+			if (tuples.get(i).getValue("RELATION").equals(eleName))
+			{
+				tuples.remove(i);
+				return;
+			}
+		}
+	}
+
 	private void printStars(int nums)
 	{
 		for (int i = 0; i < nums; ++i)
