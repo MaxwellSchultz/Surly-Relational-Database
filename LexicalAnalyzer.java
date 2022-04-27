@@ -7,7 +7,7 @@ public class LexicalAnalyzer {
 
     public static SurlyDatabase db = new SurlyDatabase();
 
-	/* Parses the given file into individual commands
+  /* Parses the given file into individual commands
 		and passes each to the appropriate parser */
     public void run(String fileName) throws FileNotFoundException{
       File file = new File(fileName);

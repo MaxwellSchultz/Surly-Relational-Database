@@ -52,13 +52,10 @@ public class InsertParser {
                     }
 
                 }
-
-                System.out.println(currString);
                 preTuple.getLast().setValue(currString); // get empty tuple element and add total string
             }
             else
             {
-                System.out.println(currTok);
                 preTuple.getLast().setValue(currTok);
             }
         }
@@ -76,30 +73,3 @@ public class InsertParser {
     }
 }
 
-/*
-        String line = scan.nextLine();
-        boolean inQuote = false;
-        String curWord = "";
-        */
-
-
-
-        /*for(int i = 0; i < line.length(); i++) {
-            if(line.charAt(i) == '\'') {
-                inQuote = true;
-                continue;
-            }
-            if(line.charAt(i) == '\'' && inQuote == true) {
-                inQuote = false;
-                continue;
-            }
-            if(line.charAt(i) == ' ' && !inQuote) {
-                AttributeValue curAtt = new AttributeValue();
-                curAtt.setName("temp");
-                curAtt.setValue(curWord);
-                preTuple.add(curAtt);
-                curWord = "";
-            } else {
-                curWord += line.charAt(i);
-            }
-        } */

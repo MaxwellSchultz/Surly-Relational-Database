@@ -4,7 +4,6 @@ public class Main {
 	/* Entry point of the application */
     public static void main(String[] args) throws FileNotFoundException {
         LexicalAnalyzer surly = new LexicalAnalyzer();
-        String argZero = "test.txt";
-        surly.run(argZero);
+        surly.run(args[0]);
     }
 }

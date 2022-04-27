@@ -66,11 +66,9 @@ public class RelationParser {
         {
             scan = new Scanner(relEle.get(i));
             name = scan.next();                 // get name
-            System.out.println(name);
             dataType = scan.next();             // get data type
-            System.out.println(dataType);
             length = scan.nextInt();            // get length
-            System.out.println(length);
+
 
             // att to schema
             attr.add(new Attribute(name, dataType, length));

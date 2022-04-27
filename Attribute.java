@@ -11,24 +11,8 @@ public class Attribute {
 		this.length = length;
 	}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
-	}
-
 	public String getName() {
 		return name;
-	}
-
-	public String getDataType() {
-		return dataType;
 	}
 
 	public int getLength() {
