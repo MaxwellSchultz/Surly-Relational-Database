@@ -28,7 +28,8 @@ public class SurlyDatabase {
 
 	/* Removes the relation with the specified name from the database */
     public void destroyRelation(String name) {
-
+		Relation currRel = getRelation(name);
+		relations.remove(currRel);
     }
 
 	/* Adds the given relation to the database */

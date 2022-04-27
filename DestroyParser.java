@@ -10,6 +10,6 @@ public class DestroyParser {
 
     /* Parses and returns the name of the relation to destroy */
     public String parseRelationName() {
-        return null;
+        return this.input;
     }
 }

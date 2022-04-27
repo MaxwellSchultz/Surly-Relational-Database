@@ -10,6 +10,6 @@ public class DeleteParser {
 
     /* Parses and returns the name of the relation for delete */
     public String parseRelationName() {
-        return null;
+        return this.input;
     }
 }

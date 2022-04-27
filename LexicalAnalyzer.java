@@ -73,7 +73,7 @@ public class LexicalAnalyzer {
         }
         else
         {
-          System.out.println("ERROR: RELATION NOT FOUND");
+          System.out.println("ERROR (INSERT): RELATION NOT FOUND");
         }
       }
       else if (cmdName.equals("PRINT"))
@@ -88,21 +88,46 @@ public class LexicalAnalyzer {
       }
       else if (cmdName.equals("DESTROY"))
       {
-          if (scan.next().equals("CATALOG"))
-          {
-            System.out.println("ERROR: CANNOT DESTROY RELATION (CATALOG)");
-            scan.close();
-            return;
-          }
+        if (scan.next().equals("CATALOG"))
+        {
+          System.out.println("ERROR (DESTROY): CANNOT DESTROY RELATION (CATALOG)");
+          scan.close();
+          return;
+        }
+
+        DestroyParser dp = new DestroyParser(cmdParams);
+        Relation currRel = db.getRelation(dp.parseRelationName());
+
+        if (currRel != null)
+        {
+          db.destroyRelation(currRel.getName());
+        }
+        else
+        {
+          System.out.println("ERROR (DESTROY): RELATION NOT FOUND");
+        }
+
       }
       else if (cmdName.equals("DELETE"))
       {
         if (scan.next().equals("CATALOG"))
-          {
-            System.out.println("ERROR: CANNOT DELETE RELATION (CATALOG)");
-            scan.close();
-            return;
-          }
+        {
+          System.out.println("ERROR: CANNOT DELETE RELATION (CATALOG)");
+          scan.close();
+          return;
+        }
+
+        DeleteParser dp = new DeleteParser(cmdParams);
+        Relation currRel = db.getRelation(dp.parseRelationName());
+
+        if (currRel != null)
+        {
+          currRel.delete();
+        }
+        else
+        {
+          System.out.println("ERROR (DELETE): RELATION NOT FOUND");
+        }
       }
 
       scan.close();
