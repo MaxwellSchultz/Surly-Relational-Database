@@ -97,7 +97,7 @@ public class LexicalAnalyzer {
       }
       else if (cmdName.equals("DESTROY"))
       {
-        if (scan.next().equals("CATALOG"))
+        if (scan.next().equals("CATALOG;"))
         {
           System.out.println("ERROR (DESTROY): CANNOT DESTROY RELATION (CATALOG)");
           scan.close();
@@ -119,7 +119,7 @@ public class LexicalAnalyzer {
       }
       else if (cmdName.equals("DELETE"))
       {
-        if (scan.next().equals("CATALOG"))
+        if (scan.next().equals("CATALOG;"))
         {
           System.out.println("ERROR: CANNOT DELETE RELATION (CATALOG)");
           scan.close();
