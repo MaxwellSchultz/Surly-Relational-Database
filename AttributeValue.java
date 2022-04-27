@@ -6,6 +6,7 @@ public class AttributeValue {
 	/* Needs appropriate accessor and mutator methods */
 
     public void setName(String name) {
+
         this.name = name;
     }
 

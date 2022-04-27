@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class InsertParser {
@@ -20,31 +21,85 @@ public class InsertParser {
     }
 	
 	/* Parses and returns the number of attributes to insert */
-    public int parseAttributeCount() {
+    public Tuple parseTuple() {
         Scanner scan = new Scanner(this.input);
-        String currTok;                             // stores current token
-        int numOfAtt = 0;                           // total number of attributes
-        scan.next();
+        String currTok;                             // stores current token total string after ("\'")
+        String currString = "";                          // stores total string
+        LinkedList<AttributeValue> preTuple = new LinkedList<>();        // stores the linkedlist that will become the tuple
 
-        while (scan.hasNext())                      // while more tokens are avalible
+        scan.next();                                // skip rel name
+
+        while (scan.hasNext()) // while more tokens are available
         {
-            currTok = scan.next();
-            if (currTok.charAt(0) == '\'')          // if a string sequence has been hit
+            currTok = scan.next();  // get next
+            preTuple.add(new AttributeValue()); // add empty attr
+
+            if (currTok.charAt(0) == '\'') // if we've hit string seq
             {
-                // while more tokens (within string) are avalible and no ending quote has been hit
-                while (scan.hasNext() && (currTok.charAt(currTok.length()-1) != '\''))
+                currString += currTok.substring(1,currTok.length()) + " "; // add initial token minus ('\'')
+                while (scan.hasNext()) // while more tokens are available
                 {
-                    currTok = scan.next();
+                    currTok = scan.next(); // get next
+
+                    if (currTok.charAt(currTok.length() - 1) == '\'') // if we've hit end of string
+                    {
+                        currString += currTok.substring(0,currTok.length()-2); // add final token without ('\'')
+
+                        break; // exit loop
+                    }
+                    else    // more or string to add
+                    {
+                        currString += currTok + " "; // concat to end of string plus space
+                    }
+
                 }
 
-                numOfAtt++;
+                System.out.println(currString);
+                preTuple.getLast().setValue(currString); // get empty tuple element and add total string
             }
-            else 
-                numOfAtt++;
+            else
+            {
+                System.out.println(currTok);
+                preTuple.getLast().setValue(currTok);
+            }
         }
+
+        /*
+        String line = scan.nextLine();
+        boolean inQuote = false;
+        String curWord = "";
+        */
+
+
+
+        /*for(int i = 0; i < line.length(); i++) {
+            if(line.charAt(i) == '\'') {
+                inQuote = true;
+                continue;
+            }
+            if(line.charAt(i) == '\'' && inQuote == true) {
+                inQuote = false;
+                continue;
+            }
+            if(line.charAt(i) == ' ' && !inQuote) {
+                AttributeValue curAtt = new AttributeValue();
+                curAtt.setName("temp");
+                curAtt.setValue(curWord);
+                preTuple.add(curAtt);
+                curWord = "";
+            } else {
+                curWord += line.charAt(i);
+            }
+        } */
+
+        preTuple.get(0).setName("CNUM");
+        preTuple.get(1).setName("TITLE");
+        preTuple.get(2).setName("CREDITS");
+
+        Tuple returnTuple = new Tuple(preTuple);
 
         scan.close();
         
-        return numOfAtt;
+        return returnTuple;
     }
 }

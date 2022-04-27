@@ -1,3 +1,5 @@
+import org.w3c.dom.Attr;
+
 import java.util.LinkedList;
 
 public class Relation {
@@ -10,11 +12,8 @@ public class Relation {
 	{
 		this.name = name;
 		this.schema = schema;
-	}
 
-	public String testPrinter() // test printer
-	{
-		return this.name;
+		this.tuples = new LinkedList<>();
 	}
 
 	/* Formats and prints the relation's name, schema, and tuples */
@@ -29,7 +28,7 @@ public class Relation {
 		{
 			currAtt = schema.get(i);
 
-			innerLength += currAtt.getLength();
+			innerLength += determineLength(currAtt);
 			innerLength += paddingWidth;
 			numOfVertBars++; 
 		}
@@ -51,13 +50,28 @@ public class Relation {
 
 			System.out.print("| ");
 			System.out.print(currAtt.getName());
-			printSpace(currAtt.getLength()-currAtt.getName().length());
+			// FIX THIS
+			printSpace(determineLength(currAtt) - paddingWidth);
 		}
 
 		System.out.print(" |");
 		System.out.println();
 		printLines(totalLen);
 		System.out.println();
+
+		Tuple currTup;
+		String currVal;
+
+		for (int i = 0; i < tuples.size(); ++i)
+		{
+			currTup = tuples.get(i);
+
+			for (int j = 0; j < schema.size(); ++j)
+			{
+				currVal = currTup.getValue(schema.get(j).getName());
+				System.out.println(currVal + "    ");
+			}
+		}
 
 	}
 
@@ -94,4 +108,24 @@ public class Relation {
 			System.out.print("-");
 		}
 	}
+
+	private void printBar(int frontPad, int backPad)
+	{
+		for (int i = 0; i < frontPad; ++i)
+			System.out.print(" ");
+		System.out.print("|");
+		for (int i = 0; i < backPad; ++i)
+			System.out.print(" ");
+
+	}
+
+	private int determineLength(Attribute attr)
+	{
+		if(attr.getName().length() >= attr.getLength()) {
+			return attr.getName().length();
+		} else {
+			return attr.getLength();
+		}
+	}
+
 }

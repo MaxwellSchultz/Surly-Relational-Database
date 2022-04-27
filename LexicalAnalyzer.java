@@ -3,13 +3,14 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class LexicalAnalyzer {
+
+    SurlyDatabase db = new SurlyDatabase();
+
 	/* Parses the given file into individual commands
 		and passes each to the appropriate parser */
     public void run(String fileName) throws FileNotFoundException{
       File file = new File(fileName);
       Scanner scan = new Scanner(file);
-
-      SurlyDatabase db = new SurlyDatabase();
 
       String currTotCmd = "";                                 // stores total command until semicolon is found
       String currTok;                                         // current token in command parse
@@ -53,11 +54,19 @@ public class LexicalAnalyzer {
       else if (cmdName.equals("INSERT"))
       {
         InsertParser ip = new InsertParser(cmdParams);
-        int attCount = ip.parseAttributeCount();
-        if (attCount > 1)
-          System.out.println("Inserting " + ip.parseAttributeCount() + " attributes to " + ip.parseRelationName());
-        else
-          System.out.println("Inserting " + ip.parseAttributeCount() + " attribute to " + ip.parseRelationName());
+
+        String relName = scan.next();           // relation name
+
+        Relation currRel = db.getRelation(relName);
+
+        if (currRel != null)  // check that relation exists
+        {
+          Tuple newTup = ip.parseTuple();
+          currRel.insert(newTup);
+
+          Relation printRel = db.getRelation("COURSE");
+          printRel.print();
+        }
       }
       else if (cmdName.equals("PRINT"))
       {
