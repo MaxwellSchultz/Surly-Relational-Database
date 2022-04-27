@@ -13,13 +13,11 @@ public class LexicalAnalyzer {
       File file = new File(fileName);
       Scanner scan = new Scanner(file);
 
-      /*
       LinkedList<Attribute> catalogSchema = new LinkedList<>();
       catalogSchema.add(new Attribute("RELATION", "CHAR", 13));
       catalogSchema.add(new Attribute("ATTRIBUTES", "NUM", 10));
       Relation catalog = new Relation("CATALOG", catalogSchema);
       db.createRelation(catalog);
-      */
 
       String currTotCmd = "";                                 // stores total command until semicolon is found
       String currTok;                                         // current token in command parse
@@ -56,7 +54,18 @@ public class LexicalAnalyzer {
         RelationParser rp = new RelationParser(cmdParams);
         Relation newRel = rp.parseRelation();
         db.createRelation(newRel);
-        //exeCmd("INSERT CATALOG " + newRel.getName() + " " + newRel.getSchema().size() + ";");
+        
+        Relation catalog = db.getRelation("CATALOG");
+        LinkedList<AttributeValue> preTuple = new LinkedList<>();
+        preTuple.add(new AttributeValue());
+        preTuple.getLast().setName("RELATION");
+        preTuple.getLast().setValue(newRel.getName());
+        preTuple.add(new AttributeValue());
+        preTuple.getLast().setName("ATTRIBUTES");
+        preTuple.getLast().setValue(Integer.toString(newRel.getSchema().size()));
+
+        Tuple catalogTup = new Tuple(preTuple);
+        catalog.insert(catalogTup);
       }
       else if (cmdName.equals("INSERT"))
       {
