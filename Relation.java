@@ -1,5 +1,3 @@
-import org.w3c.dom.Attr;
-
 import java.util.LinkedList;
 
 public class Relation {
@@ -14,6 +12,16 @@ public class Relation {
 		this.schema = schema;
 
 		this.tuples = new LinkedList<>();
+	}
+
+	public String getName()
+	{
+		return this.name;
+	}
+
+	public LinkedList<Attribute> getSchema()
+	{
+		return this.schema;
 	}
 
 	/* Formats and prints the relation's name, schema, and tuples */
@@ -35,62 +43,19 @@ public class Relation {
 
 		totalLen = innerLength + numOfVertBars + paddingWidth;
 
-		printStars(totalLen);
-		System.out.println();
-		System.out.print("| ");
-		System.out.print(this.name);
-		printSpace(innerLength + numOfVertBars - this.name.length() - 1);
-		System.out.println("|");
-		printLines(totalLen);
-		System.out.println();
-
-		for (int i = 0; i < schema.size(); ++i)
-		{
-			currAtt = schema.get(i);
-
-			System.out.print("| ");
-			System.out.print(currAtt.getName());
-			// FIX THIS
-			printSpace(determineLength(currAtt) - paddingWidth);
-		}
-
-		System.out.print(" |");
-		System.out.println();
-		printLines(totalLen);
-		System.out.println();
-
-		Tuple currTup;
-		String currVal;
-
-		for (int i = 0; i < tuples.size(); ++i)
-		{
-			currTup = tuples.get(i);
-
-			for (int j = 0; j < schema.size(); ++j)
-			{
-				currVal = currTup.getValue(schema.get(j).getName());
-				System.out.println(currVal + "    ");
-			}
-		}
-
+		printTitle(this.name, totalLen);
+		printSchema(totalLen);
+		printTuples(totalLen);
 	}
 
 	/* Adds the specified tuple to the relation */
     public void insert(Tuple tuple) {
-
+		tuples.add(tuple);
     }
 
 	/* Remove all tuples from the relation */
 	public void delete() {
-		
-	}
-
-	private void printSpace(int nums)
-	{
-		for (int i = 0; i < nums; ++i)
-		{
-			System.out.print(" ");
-		}
+		tuples = new LinkedList<>();
 	}
 
 	private void printStars(int nums)
@@ -99,6 +64,7 @@ public class Relation {
 		{
 			System.out.print("*");
 		}
+		System.out.println();
 	}
 
 	private void printLines(int nums)
@@ -107,25 +73,80 @@ public class Relation {
 		{
 			System.out.print("-");
 		}
-	}
-
-	private void printBar(int frontPad, int backPad)
-	{
-		for (int i = 0; i < frontPad; ++i)
-			System.out.print(" ");
-		System.out.print("|");
-		for (int i = 0; i < backPad; ++i)
-			System.out.print(" ");
-
+		System.out.println();
 	}
 
 	private int determineLength(Attribute attr)
 	{
-		if(attr.getName().length() >= attr.getLength()) {
-			return attr.getName().length();
-		} else {
-			return attr.getLength();
+		int attrNameLen = attr.getName().length();
+		int attrLen = attr.getLength();
+
+		if (attrNameLen > attrLen) 
+		{
+			return attrNameLen;
+		} 
+		else 
+		{
+			return attrLen;
 		}
+	}
+
+	private void printTitle(String title, int totalLen)
+	{
+		printStars(totalLen);
+
+		String printString = "| %-" + Integer.toString(totalLen-4) + "s |\n";
+		System.out.printf(printString, title);
+
+		printLines(totalLen);
+	}
+
+	private void printSchema(int totalLen)
+	{
+		Attribute currAttr;
+		String printString;
+		int length;
+
+		System.out.print("|");
+
+		for (int i = 0; i < schema.size(); ++i)
+		{
+			currAttr = schema.get(i);
+			length = determineLength(currAttr);
+			printString = " %-" + Integer.toString(length) + "s |";
+
+			System.out.printf(printString, currAttr.getName());
+		}
+		
+		System.out.println();
+		printLines(totalLen);
+	}
+
+	private void printTuples(int totalLen)
+	{
+		Tuple currTup;
+		String currVal;
+		String printString;
+		int length;
+
+		for (int i = 0; i < tuples.size(); ++i)
+		{
+			currTup = tuples.get(i);
+			System.out.print("|");
+
+			for (int j = 0; j < schema.size(); ++j)
+			{
+				currVal = currTup.getValue(schema.get(j).getName());
+				length = determineLength(schema.get(j));
+				printString = " %-" + Integer.toString(length) + "s |";
+
+				System.out.printf(printString, currVal);
+			}
+
+			System.out.println();
+		}
+
+		printStars(totalLen);
 	}
 
 }

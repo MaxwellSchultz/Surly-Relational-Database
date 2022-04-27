@@ -9,8 +9,10 @@ public class Tuple {
 
     /* Returns the value of the specified attribute */
     public String getValue(String attributeName) {
-        for(int i = 0; i < values.size(); i++) {
-            if(values.get(i).getName().equals(attributeName)) {
+        for (int i = 0; i < values.size(); i++) 
+        {
+            if (values.get(i).getName().equals(attributeName)) 
+            {
                 return values.get(i).getValue();
             }
         }

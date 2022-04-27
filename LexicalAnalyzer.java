@@ -1,16 +1,25 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class LexicalAnalyzer {
 
-    SurlyDatabase db = new SurlyDatabase();
+    public static SurlyDatabase db = new SurlyDatabase();
 
 	/* Parses the given file into individual commands
 		and passes each to the appropriate parser */
     public void run(String fileName) throws FileNotFoundException{
       File file = new File(fileName);
       Scanner scan = new Scanner(file);
+
+      /*
+      LinkedList<Attribute> catalogSchema = new LinkedList<>();
+      catalogSchema.add(new Attribute("RELATION", "CHAR", 13));
+      catalogSchema.add(new Attribute("ATTRIBUTES", "NUM", 10));
+      Relation catalog = new Relation("CATALOG", catalogSchema);
+      db.createRelation(catalog);
+      */
 
       String currTotCmd = "";                                 // stores total command until semicolon is found
       String currTok;                                         // current token in command parse
@@ -28,7 +37,7 @@ public class LexicalAnalyzer {
         currTotCmd = currTotCmd.concat(" ".concat(currTok));  // if not a command, begin adding tokens to currTotCmd
         if (currTok.contains(";"))                            // if semicolon is hit
         {
-            exeCmd(currTotCmd, db);                               // test command and attempt to execute
+            exeCmd(currTotCmd);                               // test command and attempt to execute
             currTotCmd = "";                                  // reset currTotCmd for next command
         }
       }
@@ -36,7 +45,7 @@ public class LexicalAnalyzer {
       scan.close();
     }
 
-    private static void exeCmd(String cmd, SurlyDatabase db)
+    private static void exeCmd(String cmd)
     {
       Scanner scan = new Scanner(cmd);                        // setup scanner to tokenize command
       String cmdName = scan.next();                           // first token should be command name
@@ -45,11 +54,9 @@ public class LexicalAnalyzer {
       if (cmdName.equals("RELATION"))
       {
         RelationParser rp = new RelationParser(cmdParams);
-        db.createRelation(rp.parseRelation());
-
-        Relation printRel = db.getRelation("COURSE");
-
-        printRel.print();
+        Relation newRel = rp.parseRelation();
+        db.createRelation(newRel);
+        //exeCmd("INSERT CATALOG " + newRel.getName() + " " + newRel.getSchema().size() + ";");
       }
       else if (cmdName.equals("INSERT"))
       {
@@ -63,27 +70,39 @@ public class LexicalAnalyzer {
         {
           Tuple newTup = ip.parseTuple();
           currRel.insert(newTup);
-
-          Relation printRel = db.getRelation("COURSE");
-          printRel.print();
+        }
+        else
+        {
+          System.out.println("ERROR: RELATION NOT FOUND");
         }
       }
       else if (cmdName.equals("PRINT"))
       {
         PrintParser pp = new PrintParser(cmdParams);
         String[] rels = pp.parseRelationNames();
-        int len = rels.length;
-        int i = 0;
-
-        if (len > 1)
-          System.out.print("Printing " + rels.length + " relations: ");
-        else
-          System.out.print("Printing " + rels.length + " relation: ");
-
-        for (; i < rels.length - 1; i++)
-          System.out.print(rels[i] + ", ");
-
-        System.out.println(rels[i] + ".");
+        
+        for (String relName : rels)
+        {
+          db.getRelation(relName).print();
+        }
+      }
+      else if (cmdName.equals("DESTROY"))
+      {
+          if (scan.next().equals("CATALOG"))
+          {
+            System.out.println("ERROR: CANNOT DESTROY RELATION (CATALOG)");
+            scan.close();
+            return;
+          }
+      }
+      else if (cmdName.equals("DELETE"))
+      {
+        if (scan.next().equals("CATALOG"))
+          {
+            System.out.println("ERROR: CANNOT DELETE RELATION (CATALOG)");
+            scan.close();
+            return;
+          }
       }
 
       scan.close();

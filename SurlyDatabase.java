@@ -17,7 +17,7 @@ public class SurlyDatabase {
 		for (int i = 0; i < relations.size(); ++i)
 		{
 			currRel = relations.get(i);
-			if (currRel.testPrinter().equals(name))
+			if (currRel.getName().equals(name))
 			{
 				return currRel;
 			}

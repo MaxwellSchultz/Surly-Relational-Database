@@ -23,31 +23,30 @@ public class InsertParser {
 	/* Parses and returns the number of attributes to insert */
     public Tuple parseTuple() {
         Scanner scan = new Scanner(this.input);
-        String currTok;                             // stores current token total string after ("\'")
-        String currString = "";                          // stores total string
-        LinkedList<AttributeValue> preTuple = new LinkedList<>();        // stores the linkedlist that will become the tuple
+        String currTok;                                                 // stores current token total string after ("\'")
+        String currString = "";                                         // stores total string
+        LinkedList<AttributeValue> preTuple = new LinkedList<>();       // stores the linkedlist that will become the tuple
+        LinkedList<Attribute> attrVals = LexicalAnalyzer.db.getRelation(scan.next()).getSchema(); // get schema of current relation
 
-        scan.next();                                // skip rel name
-
-        while (scan.hasNext()) // while more tokens are available
+        while (scan.hasNext())                      // while more tokens are available
         {
-            currTok = scan.next();  // get next
-            preTuple.add(new AttributeValue()); // add empty attr
+            currTok = scan.next();                  // get next token
+            preTuple.add(new AttributeValue());     // add empty attr
 
-            if (currTok.charAt(0) == '\'') // if we've hit string seq
+            if (currTok.charAt(0) == '\'')          // if we've hit string seq
             {
-                currString += currTok.substring(1,currTok.length()) + " "; // add initial token minus ('\'')
-                while (scan.hasNext()) // while more tokens are available
+                currString += currTok.substring(1,currTok.length()) + " ";      // add initial token minus ('\'')
+                while (scan.hasNext())                                          // while more tokens are available
                 {
                     currTok = scan.next(); // get next
 
-                    if (currTok.charAt(currTok.length() - 1) == '\'') // if we've hit end of string
+                    if (currTok.charAt(currTok.length() - 1) == '\'')           // if end of string hit
                     {
-                        currString += currTok.substring(0,currTok.length()-2); // add final token without ('\'')
+                        currString += currTok.substring(0,currTok.length()-1);  // add final token without ('\'')
 
                         break; // exit loop
                     }
-                    else    // more or string to add
+                    else        // more or string to add
                     {
                         currString += currTok + " "; // concat to end of string plus space
                     }
@@ -64,7 +63,20 @@ public class InsertParser {
             }
         }
 
-        /*
+        for (int i = 0; i < attrVals.size(); ++i)
+        {
+            preTuple.get(i).setName(attrVals.get(i).getName());
+        }
+
+        Tuple returnTuple = new Tuple(preTuple);
+
+        scan.close();
+        
+        return returnTuple;
+    }
+}
+
+/*
         String line = scan.nextLine();
         boolean inQuote = false;
         String curWord = "";
@@ -91,15 +103,3 @@ public class InsertParser {
                 curWord += line.charAt(i);
             }
         } */
-
-        preTuple.get(0).setName("CNUM");
-        preTuple.get(1).setName("TITLE");
-        preTuple.get(2).setName("CREDITS");
-
-        Tuple returnTuple = new Tuple(preTuple);
-
-        scan.close();
-        
-        return returnTuple;
-    }
-}

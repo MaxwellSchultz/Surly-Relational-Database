@@ -4,6 +4,13 @@ public class Attribute {
 	private String dataType;	/* data type of the attribute */
 	private int length;		/* length of the attribute */
 
+	public Attribute(String name, String dataType, int length)
+	{
+		this.name = name;
+		this.dataType = dataType;
+		this.length = length;
+	}
+
 	public void setDataType(String dataType) {
 		this.dataType = dataType;
 	}

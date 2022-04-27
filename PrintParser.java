@@ -16,10 +16,10 @@ public class PrintParser {
         LinkedList<String> relNames = new LinkedList<>();
         String currTok;                                                 // stores current token
 
-        while (scan.hasNext())                                          // while more tokens are avalible 
+        while (scan.hasNext())                                          // while more tokens are available 
         {
             currTok = scan.next();          
-            if (currTok.charAt(currTok.length() - 1) == ',')            // if syntax is corrent and tokens are seperated by (",")
+            if (currTok.charAt(currTok.length() - 1) == ',')            // if syntax is correct and tokens are separated by (",")
             {
                 currTok = currTok.substring(0, currTok.length()-1);     // remove comma
             }

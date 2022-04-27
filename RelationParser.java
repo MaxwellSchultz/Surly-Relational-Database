@@ -40,7 +40,7 @@ public class RelationParser {
                 relSet += currTok + " ";
                 currTok = scan.next();                  // get next length
                 relSet += currTok.substring(0, currTok.length()-1); // removed (",") and (")")
-             
+
                 relEle.add(relSet);
                 relSet = "";
             }
@@ -73,12 +73,7 @@ public class RelationParser {
             System.out.println(length);
 
             // att to schema
-            attr.add(new Attribute());
-
-            // set values
-            attr.get(i).setName(name);
-            attr.get(i).setDataType(dataType);
-            attr.get(i).setLength(length);
+            attr.add(new Attribute(name, dataType, length));
         
             scan.close();
         }
