@@ -24,6 +24,10 @@ public class Relation {
 		return this.schema;
 	}
 
+	public LinkedList<Tuple> getTuples() {
+		return this.tuples;
+	}
+
 	/* Formats and prints the relation's name, schema, and tuples */
 	public void print() {
 		

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -126,17 +127,22 @@ public class LexicalAnalyzer {
           scan.close();
           return;
         }
+        String[] cmdWhereCheckArr = cmd.split(" ");
+        if(cmdWhereCheckArr[3].equals("WHERE")) {
+          DeleteWhereParser dwp = new DeleteWhereParser(cmdParams, db);
+          dwp.parseDeleteTuples();
+        } else{
+          DeleteParser dp = new DeleteParser(cmdParams);
+          Relation currRel = db.getRelation(dp.parseRelationName());
 
-        DeleteParser dp = new DeleteParser(cmdParams);
-        Relation currRel = db.getRelation(dp.parseRelationName());
-
-        if (currRel != null)
-        {
-          currRel.delete();
-        }
-        else
-        {
-          System.out.println("ERROR (DELETE): RELATION NOT FOUND");
+          if (currRel != null)
+          {
+            currRel.delete();
+          }
+          else
+          {
+            System.out.println("ERROR (DELETE): RELATION NOT FOUND");
+          }
         }
       }
 
