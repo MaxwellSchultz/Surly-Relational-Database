@@ -128,7 +128,7 @@ public class LexicalAnalyzer {
           return;
         }
         String[] cmdWhereCheckArr = cmd.split(" ");
-        cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length - 1);
+        cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length);
         if(cmdWhereCheckArr[2].equals("WHERE")) {
           DeleteWhereParser dwp = new DeleteWhereParser(cmdParams, db);
           dwp.parseDeleteTuples();
@@ -149,18 +149,25 @@ public class LexicalAnalyzer {
       // word is the variable name (assume good input) - MAX HANDLE ERROR HANDLING FOR BAD INPUT LATER PLEASE !!!
       else {
         String[] cmdWhereCheckArr = cmd.split(" ");
-        cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length - 1);
+        cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length);
         System.out.println(Arrays.toString(cmdWhereCheckArr));
         if(cmdWhereCheckArr[2].equals("SELECT")) {
           try {
-            if(cmdWhereCheckArr[3].equals("WHERE")) {
+            if(cmdWhereCheckArr[4].equals("WHERE")) {
+              String[] newCmdParams = cmdParams.split(" ");
+              // ex: [OFFERING, WHERE, CNUM, =, CSCI241, and, SECTION, >, 27922]
+              newCmdParams = Arrays.copyOfRange(newCmdParams, 2, newCmdParams.length);
               SelectWhereParser swp = new SelectWhereParser(cmdParams, db);
+
             }
           } catch (IndexOutOfBoundsException e) {
             // SelectParser sp = new SelectParser();
           }
         } else if(cmdWhereCheckArr[2].equals("PROJECT")) {
           // run project stuff here max
+          String[] newCmdParams = cmdParams.split(" ");
+          // ex: [OFFERING, WHERE, CNUM, =, CSCI241, and, SECTION, >, 27922]
+          newCmdParams = Arrays.copyOfRange(newCmdParams, 2, newCmdParams.length);
         }
 
       }
