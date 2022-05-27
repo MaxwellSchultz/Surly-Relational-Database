@@ -1,8 +1,8 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+// The term 'condition' used in comments in this file represent strings that look like 'CNUM = CSCI145' or 'ROOM = AW205'
 public class DeleteWhereParser {
 
     String input;
@@ -14,31 +14,34 @@ public class DeleteWhereParser {
         this.input = input;
         this.db = db;
         String[] splitInput = input.split(" ");
+        // sets the relation for this object as the first input line
         this.r = db.getRelation(splitInput[0]);
     }
 
     public void parseDeleteTuples() {
-        String cmdString = getCmdStrings(input);
+
+        // gets the string of all conditions after the WHERE
+        String cmdString = getCndStrings(input);
 
 
-        ArrayList<String[]> queriesCmds = parseString(cmdString);
+        // Splits on the OR values, creates an array of independent statements to be run, ANDs are then split at each index of the original array.
+        // For example, A or B and C or D becomes
+        // [[A], [B, C], [D]]
+        ArrayList<String[]> queriesCnds = parseString(cmdString);
 
-//        System.out.println("Queries Commands ArrayList: ");
-//        for(String[] ss :queriesCmds) {
-//            System.out.println(Arrays.toString(ss));
-//        }
-//        System.out.println();
-
+        // Creates an empty array list of each tuple
         ArrayList<Tuple> tuplesToDelete = new ArrayList<>();
 
-        for(String[] eachCmd : queriesCmds) {
-            System.out.println(Arrays.toString(eachCmd) + "AAAAA");
+        // For each 1D array of conditions in the queriesCmds 2D array
+        for(String[] eachCmd : queriesCnds) {
+            // adds the tuples returned by each condition to total amount of tuples to be deleted
             ArrayList<Tuple> tempTuples = runQuery(eachCmd);
             for(int i = 0; i < tempTuples.size(); i ++) {
                 tuplesToDelete.add(tempTuples.get(i));
             }
         }
 
+        // removes all tuples from relation that are in tuplesToDelete
         for(int i = 0; i < tuplesToDelete.size(); i ++) {
             r.getTuples().remove(tuplesToDelete.get(i));
         }
@@ -47,6 +50,7 @@ public class DeleteWhereParser {
 
     }
 
+    // see comment before function call in parseDeleteTuples()
     private static ArrayList<String[]> parseString(String str) {
 
         ArrayList<String[]> arrL = new ArrayList<>();
@@ -59,76 +63,78 @@ public class DeleteWhereParser {
         return arrL;
     }
 
+    // In prose: Takes all tuples that fit first condition in input string and then makes sure out of those tuples that it fits all the other conditions in input string
     public ArrayList<Tuple> runQuery(String[] ss) {
+        // creates List of tuples to be deleted
         ArrayList<Tuple> tempTuples = new ArrayList<>();
 
+        // Lines to 'end comment'; splits condition of the first condition into separate variables
         String firstCmd = ss[0];
 
         String[] firstSplitCmd = firstCmd.split(" ");
 
-        System.out.println(Arrays.toString(firstSplitCmd));
         String firstAttributeName = firstSplitCmd[0];
         String firstOperator = firstSplitCmd[1];
-        String firstAttributeValue = firstSplitCmd[2];
+        String firstAttributeValue = firstSplitCmd[2]; // end comment
 
         LinkedList<Tuple> tuplesInRelation = r.getTuples();
 
-        // run through all the tuples and add the tuples that fit the first command
+        // run through all the tuples and add the tuples that fit the first condition
         for(int i = 0; i < tuplesInRelation.size(); i ++) {
-            System.out.println(i);
             Tuple curTuple = tuplesInRelation.get(i);
+            // switch statement to see what the operator is
             switch (firstOperator) {
                 case ">":
                     if (Integer.parseInt(curTuple.getValue(firstAttributeName)) > Integer.parseInt(firstAttributeValue)) {
                         tempTuples.add(curTuple);
-                    } else continue;
+                    }
                     break;
                 case "<":
                     if (Integer.parseInt(curTuple.getValue(firstAttributeName)) < Integer.parseInt(firstAttributeValue)) {
                         tempTuples.add(curTuple);
-                    } else continue;
+                    }
                     break;
-                // implement different case for string and integer
+                // different cases for string and integer
                 case "=":
-                    if(isNumeric(firstAttributeValue)) {
+                    if (isNumeric(firstAttributeValue)) {
                         if (Integer.parseInt(curTuple.getValue(firstAttributeName)) == Integer.parseInt(firstAttributeValue)) {
                             tempTuples.add(curTuple);
-                        } else continue;
+                        }
                     } else {
                         if (curTuple.getValue(firstAttributeName).equals(firstAttributeValue)) {
                             tempTuples.add(curTuple);
-                        } else continue;
+                        }
                     }
 
                     break;
-                // implement different case for string and integer
+                // different cases for string and integer
                 case "!=":
-                    if(isNumeric(firstAttributeValue)) {
+                    if (isNumeric(firstAttributeValue)) {
                         if (Integer.parseInt(curTuple.getValue(firstAttributeName)) != Integer.parseInt(firstAttributeValue)) {
                             tempTuples.add(curTuple);
-                        } else continue;
+                        }
                     } else {
                         if (!curTuple.getValue(firstAttributeName).equals(firstAttributeValue)) {
                             tempTuples.add(curTuple);
-                        } else continue;
+                        }
                     }
                     break;
                 case ">=":
                     if (Integer.parseInt(curTuple.getValue(firstAttributeName)) >= Integer.parseInt(firstAttributeValue)) {
                         tempTuples.add(curTuple);
-                    } else continue;
+                    }
                     break;
                 case "<=":
                     if (Integer.parseInt(curTuple.getValue(firstAttributeName)) <= Integer.parseInt(firstAttributeValue)) {
                         tempTuples.add(curTuple);
-                    } else continue;
+                    }
                     break;
                 default:
-                    System.out.println("Agony, torment even.");
+                    System.out.println("NOT A VALID OPERATOR");
             }
         }
 
-        // run through the rest of the commands
+        // run through the rest of the conditions in the input array
         for(int i = 1; i < ss.length; i++) {
 
             String[] splitCmd = ss[i].split(" ");
@@ -136,72 +142,77 @@ public class DeleteWhereParser {
             String operator = splitCmd[1];
             String attributeValue = splitCmd[2];
 
-            // run through all of the tuples that fit the first command (0 index), and then remove them from the returned tuple list if they dont fit all the requirements
+            // run through all the tuples that fit the first condition (0 index), and then remove them from the returned tuple list if they don't fit all the requirements
             for(int j = 0; j < tempTuples.size(); j ++) {
-                Tuple curTuple = tempTuples.get(i);
+                Tuple curTuple = tempTuples.get(j);
+
                 // operations have to be reversed to act as an overlap
                 switch (operator) {
                     case ">":
                         if (Integer.parseInt(curTuple.getValue(attributeName)) <= Integer.parseInt(attributeValue)) {
-                            tempTuples.add(j, null);
-                        } else continue;
+                            tempTuples.set(j, null);
+                        }
                         break;
                     case "<":
                         if (Integer.parseInt(curTuple.getValue(attributeName)) >= Integer.parseInt(attributeValue)) {
-                            tempTuples.add(j, null);
-                        } else continue;
+                            tempTuples.set(j, null);
+                        }
                         break;
                     case "=":
-                        if(isNumeric(firstAttributeValue)) {
-                            if (Integer.parseInt(curTuple.getValue(firstAttributeName)) != Integer.parseInt(firstAttributeValue)) {
-                                tempTuples.add(curTuple);
-                            } else continue;
+                        // cases for both strings and integers
+                        if(isNumeric(attributeValue)) {
+                            if (Integer.parseInt(curTuple.getValue(attributeName)) != Integer.parseInt(attributeValue)) {
+                                tempTuples.set(j, null);
+                            }
                         } else {
-                            if (!curTuple.getValue(firstAttributeName).equals(firstAttributeValue)) {
-                                tempTuples.add(curTuple);
-                            } else continue;
+                            if (!curTuple.getValue(attributeName).equals(attributeValue)) {
+                                tempTuples.set(j, null);
+                            }
                         }
                         break;
                     case "!=":
-                        if(isNumeric(firstAttributeValue)) {
-                            if (Integer.parseInt(curTuple.getValue(firstAttributeName)) == Integer.parseInt(firstAttributeValue)) {
-                                tempTuples.add(curTuple);
-                            } else continue;
+                        // cases for both strings and integers
+                        if(isNumeric(attributeValue)) {
+                            if (Integer.parseInt(curTuple.getValue(attributeName)) == Integer.parseInt(attributeValue)) {
+                                tempTuples.set(j, null);
+                            }
                         } else {
-                            if (curTuple.getValue(firstAttributeName).equals(firstAttributeValue)) {
-                                tempTuples.add(curTuple);
-                            } else continue;
+                            if (curTuple.getValue(attributeName).equals(attributeValue)) {
+                                tempTuples.set(j, null);
+                            }
                         }
                         break;
                     case ">=":
                         if (Integer.parseInt(curTuple.getValue(attributeName)) < Integer.parseInt(attributeValue)) {
-                            tempTuples.add(j, null);
-                        } else continue;
+                            tempTuples.set(j, null);
+                        }
                         break;
                     case "<=":
                         if (Integer.parseInt(curTuple.getValue(attributeName)) > Integer.parseInt(attributeValue)) {
-                            tempTuples.add(j, null);
-                        } else continue;
+                            tempTuples.set(j, null);
+                        }
                         break;
                     default:
-                        System.out.println("Agony, torment even.");
+                        System.out.println("INVALID OPERATOR");
                 }
             }
         }
 
         ArrayList<Tuple> output = new ArrayList<>();
 
-        // return all the elements in the original tempTuples that weren't set to null
+        // return all the elements in the original tempTuples that weren't set to null during the previous for loop
         for(int i = 0; i < tempTuples.size(); i ++) {
             if(tempTuples.get(i) != null) {
                 output.add(tempTuples.get(i));
             }
         }
 
+        // returns all the elements that fit each set of statements separated by an or
         return output;
     }
 
-    private static String getCmdStrings(String str) {
+    // see comment on function call in parseDeleteTuples()
+    private static String getCndStrings(String str) {
         String output = "";
         String[] splitInput = str.split(" ");
         splitInput = Arrays.copyOfRange(splitInput, 2, splitInput.length);
@@ -212,11 +223,10 @@ public class DeleteWhereParser {
         return output.trim();
     }
 
+    // checks if a string can be converted to an integer
     private static boolean isNumeric(String numAsString) {
-        int testInt;
-
         try {
-            testInt = Integer.parseInt(numAsString);
+            Integer.parseInt(numAsString);
             return true;
         } catch (NumberFormatException e) {
             return false;
