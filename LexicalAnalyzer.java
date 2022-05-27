@@ -128,7 +128,8 @@ public class LexicalAnalyzer {
           return;
         }
         String[] cmdWhereCheckArr = cmd.split(" ");
-        if(cmdWhereCheckArr[3].equals("WHERE")) {
+        cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length - 1);
+        if(cmdWhereCheckArr[2].equals("WHERE")) {
           DeleteWhereParser dwp = new DeleteWhereParser(cmdParams, db);
           dwp.parseDeleteTuples();
         } else{
@@ -144,6 +145,24 @@ public class LexicalAnalyzer {
             System.out.println("ERROR (DELETE): RELATION NOT FOUND");
           }
         }
+      }
+      // word is the variable name (assume good input) - MAX HANDLE ERROR HANDLING FOR BAD INPUT LATER PLEASE !!!
+      else {
+        String[] cmdWhereCheckArr = cmd.split(" ");
+        cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length - 1);
+        System.out.println(Arrays.toString(cmdWhereCheckArr));
+        if(cmdWhereCheckArr[2].equals("SELECT")) {
+          try {
+            if(cmdWhereCheckArr[3].equals("WHERE")) {
+              SelectWhereParser swp = new SelectWhereParser(cmdParams, db);
+            }
+          } catch (IndexOutOfBoundsException e) {
+            // SelectParser sp = new SelectParser();
+          }
+        } else if(cmdWhereCheckArr[2].equals("PROJECT")) {
+          // run project stuff here max
+        }
+
       }
 
       scan.close();
