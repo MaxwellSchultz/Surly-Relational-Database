@@ -157,11 +157,16 @@ public class LexicalAnalyzer {
               String[] newCmdParams = cmdParams.split(" ");
               // ex: [OFFERING, WHERE, CNUM, =, CSCI241, and, SECTION, >, 27922]
               newCmdParams = Arrays.copyOfRange(newCmdParams, 2, newCmdParams.length);
-              SelectWhereParser swp = new SelectWhereParser(cmdParams, db);
+              SelectWhereParser swp = new SelectWhereParser(newCmdParams, db, cmdWhereCheckArr[0]);
+              swp.parseAddRelation();
 
             }
           } catch (IndexOutOfBoundsException e) {
-            // SelectParser sp = new SelectParser();
+            String[] newCmdParams = cmdParams.split(" ");
+            // ex: [OFFERING, WHERE, CNUM, =, CSCI241, and, SECTION, >, 27922]
+            newCmdParams = Arrays.copyOfRange(newCmdParams, 2, newCmdParams.length);
+              SelectParser sp = new SelectParser(newCmdParams, db, cmdWhereCheckArr[0]);
+              sp.parseAddRelation();
           }
         } else if(cmdWhereCheckArr[2].equals("PROJECT")) {
           // run project stuff here max

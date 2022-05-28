@@ -28,6 +28,10 @@ public class Relation {
 		return this.tuples;
 	}
 
+	public void setTuples (LinkedList<Tuple> tuples) {
+		this.tuples = tuples;
+	}
+
 	/* Formats and prints the relation's name, schema, and tuples */
 	public void print() {
 		
