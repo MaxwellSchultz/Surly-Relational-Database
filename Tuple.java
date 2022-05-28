@@ -24,4 +24,28 @@ public class Tuple {
     {
         return this.values;
     }
+
+    @Override public boolean equals(Object o)
+    {
+        if (o == this)
+            return true;
+
+        if (!(o instanceof Tuple))
+            return false;
+
+        Tuple tupObj = (Tuple) o;
+
+        if (tupObj.getValues().size() != this.values.size())
+            return false;
+
+        LinkedList<AttributeValue> oAttrs = tupObj.getValues();
+        
+        for (int i = 0; i < oAttrs.size(); ++i)
+        {
+            if (!this.values.get(i).getName().equals(oAttrs.get(i).getName()) || !this.values.get(i).getValue().equals(oAttrs.get(i).getValue()))
+                return false;
+        }
+
+        return true;
+    }
 }

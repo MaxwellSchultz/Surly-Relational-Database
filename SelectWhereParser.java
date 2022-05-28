@@ -21,11 +21,6 @@ public class SelectWhereParser {
     }
 
     public void parseAddRelation() {
-
-        // check relation relation exists
-        if (this.origR == null)
-            return;
-
         // check to maintain rules of temp relation
         Relation prevRel = db.getRelation(newRelationName); // This name may already be a temp rel
 

@@ -1,4 +1,7 @@
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ProjectParser {
 
@@ -28,15 +31,12 @@ public class ProjectParser {
     public void projectRelation()
     {
         Relation rel = db.getRelation(this.relName);
-
-        // check relation relation exists
-        if (rel == null)
-            return;
+        Relation newRelTest = db.getRelation(this.newRelName);
 
         // check to maintain rules of temp relation
-        if (rel != null)
+        if (newRelTest != null)
         {
-            if (rel.isTemp())
+            if (newRelTest.isTemp())
                 db.destroyRelation(this.newRelName);
             else 
                 return;
@@ -51,15 +51,17 @@ public class ProjectParser {
 
         int j = 0;
 
+        // get ordered indexes of schema where columns will be projected
         for (int i = 0; i < schema.size(); ++i)
         {
-            if (attrList.contains(schema.get(i)))
+            if (attrList.contains(schema.get(i).getName()))
             {
                 ordering[j] = i;
                 j++;
             }
         }
 
+        // use ordered indexes to make new schema with only values from projection
         for (int i = 0; i < ordering.length; ++i)
         {
             newSchema.add(schema.get(ordering[i]));
@@ -68,17 +70,22 @@ public class ProjectParser {
         LinkedList<AttributeValue> tempVals;
         LinkedList<AttributeValue> currTup;
 
+        // use ordered indexes to refactor tuples to only contain columns from projection
         for (int i = 0; i < tuples.size(); ++i)
         {
             currTup = tuples.get(i).getValues();
             tempVals = new LinkedList<>();
 
             for (j = 0; j < ordering.length; ++j)
-                tempVals.add(currTup.get(i));
+                tempVals.add(currTup.get(ordering[j]));
 
             newTuples.add(new Tuple(tempVals));
         }
 
+        // Check for distinct values
+        newTuples = newTuples.stream().distinct().collect(Collectors.toCollection(LinkedList::new));
+
+        // Generate new relation
         Relation newRel = new Relation(this.newRelName, newSchema, true);
         newRel.setTuples(newTuples);
 

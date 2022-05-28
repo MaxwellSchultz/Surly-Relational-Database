@@ -152,13 +152,10 @@ public class LexicalAnalyzer {
     {
         PrintParser pp = new PrintParser(cmdParams);
         String[] rels = pp.parseRelationNames();
-
-        System.out.println(Arrays.toString(rels));
         
         for (String relName : rels)
         {
           Relation rel = db.getRelation(relName);
-          System.out.println(rel);
           rel.print();
         }
     }
