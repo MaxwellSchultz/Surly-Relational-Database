@@ -19,4 +19,9 @@ public class Tuple {
 
         return "ERROR";
     }
+
+    public LinkedList<AttributeValue> getValues()
+    {
+        return this.values;
+    }
 }

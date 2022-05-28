@@ -22,6 +22,21 @@ public class SelectWhereParser {
 
     public void parseAddRelation() {
 
+        // check relation relation exists
+        if (this.origR == null)
+            return;
+
+        // check to maintain rules of temp relation
+        Relation prevRel = db.getRelation(newRelationName); // This name may already be a temp rel
+
+        if (prevRel != null)
+        {
+            if (prevRel.isTemp())
+                db.destroyRelation(this.newRelationName);
+            else 
+                return;
+        }
+
         // gets the string of all conditions after the WHERE
         String cmdString = getCndStrings(input);
 
@@ -42,7 +57,8 @@ public class SelectWhereParser {
             }
         }
 
-        newR = new Relation(newRelationName, origR.getSchema());
+        // generates new temp relation
+        newR = new Relation(newRelationName, origR.getSchema(), true);
         LinkedList<Tuple> tuplesOfNewRelation = new LinkedList<>();
 
         // removes all tuples from relation that are in tuplesToAdd

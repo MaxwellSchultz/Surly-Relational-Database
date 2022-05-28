@@ -5,11 +5,21 @@ public class Relation {
 	private LinkedList<Attribute> schema;	/* Schema of the relation */
 	private LinkedList<Tuple> tuples;	/* Tuples stored on the relation */
 	final int paddingWidth = 2;
+	private boolean temp = false;
 
 	public Relation(String name, LinkedList<Attribute> schema)
 	{
 		this.name = name;
 		this.schema = schema;
+
+		this.tuples = new LinkedList<>();
+	}
+
+	public Relation(String name, LinkedList<Attribute> schema, boolean temp)
+	{
+		this.name = name;
+		this.schema = schema;
+		this.temp = temp;
 
 		this.tuples = new LinkedList<>();
 	}
@@ -30,6 +40,11 @@ public class Relation {
 
 	public void setTuples (LinkedList<Tuple> tuples) {
 		this.tuples = tuples;
+	}
+
+	public boolean isTemp()
+	{
+		return this.temp;
 	}
 
 	/* Formats and prints the relation's name, schema, and tuples */

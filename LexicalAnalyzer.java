@@ -11,6 +11,7 @@ public class LexicalAnalyzer {
   /* Parses the given file into individual commands
 		and passes each to the appropriate parser */
     public void run(String fileName) throws FileNotFoundException{
+
       File file = new File(fileName);
       Scanner scan = new Scanner(file);
 
@@ -52,6 +53,58 @@ public class LexicalAnalyzer {
 
       if (cmdName.equals("RELATION"))
       {
+        Relation(cmdParams);
+      }
+      else if (cmdName.equals("INSERT"))
+      {
+        Insert(cmdParams, scan);
+      }
+      else if (cmdName.equals("PRINT"))
+      {
+        Print(cmdParams);
+      }
+      else if (cmdName.equals("DESTROY"))
+      {
+        Destroy(cmdParams, scan);
+      }
+      else if (cmdName.equals("DELETE"))
+      {
+        Delete(cmdParams, cmd, scan);
+      }
+      else 
+      {
+          String[] cmdParamsArr = cmdParams.split(" ");
+
+          if (cmdParamsArr.length > 2 && cmdParamsArr[1].equals("SELECT"))
+          {
+            if (cmdParamsArr.length > 4 && cmdParamsArr[3].equals("WHERE"))
+            {
+              SelectWhereParser swp = new SelectWhereParser(Arrays.copyOfRange(cmdParamsArr, 2, cmdParamsArr.length), db, cmdName);
+              swp.parseAddRelation();
+            }
+            else
+            {
+              SelectParser sp = new SelectParser(Arrays.copyOfRange(cmdParamsArr, 2, cmdParamsArr.length), db, cmdName);
+              sp.parseAddRelation();
+            }
+          }
+          else if (cmdParamsArr.length > 2 && cmdParamsArr[1].equals("PROJECT"))
+          {
+            ProjectParser pp = new ProjectParser(Arrays.copyOfRange(cmdParamsArr, 2, cmdParamsArr.length), cmdName, db);
+            pp.projectRelation();
+          }
+          else if (cmdParamsArr.length > 2 && cmdParamsArr[1].equals("JOIN"))
+          {
+
+          }
+      }
+      // word is the variable name (assume good input) - MAX HANDLE ERROR HANDLING FOR BAD INPUT LATER PLEASE !!!
+
+      scan.close();
+    }
+
+    public static void Relation(String cmdParams)
+    {
         RelationParser rp = new RelationParser(cmdParams);
         Relation newRel = rp.parseRelation();
         db.createRelation(newRel);
@@ -67,12 +120,20 @@ public class LexicalAnalyzer {
 
         Tuple catalogTup = new Tuple(preTuple);
         catalog.insert(catalogTup);
-      }
-      else if (cmdName.equals("INSERT"))
-      {
+    }
+
+    public static void Insert(String cmdParams, Scanner scan)
+    {
         InsertParser ip = new InsertParser(cmdParams);
 
         String relName = scan.next();           // relation name
+
+        Relation rel = db.getRelation(relName);
+
+        if (rel != null && rel.isTemp())
+        {
+          return;
+        }
 
         Relation currRel = db.getRelation(relName);
 
@@ -85,23 +146,38 @@ public class LexicalAnalyzer {
         {
           System.out.println("ERROR (INSERT): RELATION NOT FOUND");
         }
-      }
-      else if (cmdName.equals("PRINT"))
-      {
+    }
+
+    public static void Print(String cmdParams)
+    {
         PrintParser pp = new PrintParser(cmdParams);
         String[] rels = pp.parseRelationNames();
+
+        System.out.println(Arrays.toString(rels));
         
         for (String relName : rels)
         {
-          db.getRelation(relName).print();
+          Relation rel = db.getRelation(relName);
+          System.out.println(rel);
+          rel.print();
         }
-      }
-      else if (cmdName.equals("DESTROY"))
-      {
-        if (scan.next().equals("CATALOG;"))
+    }
+
+    public static void Destroy(String cmdParams, Scanner scan)
+    {
+        String relName = scan.next();
+
+        if (relName.equals("CATALOG;"))
         {
           System.out.println("ERROR (DESTROY): CANNOT DESTROY RELATION (CATALOG)");
           scan.close();
+          return;
+        }
+
+        Relation rel = db.getRelation(relName);
+
+        if (rel != null && rel.isTemp())
+        {
           return;
         }
 
@@ -117,22 +193,36 @@ public class LexicalAnalyzer {
         {
           System.out.println("ERROR (DESTROY): RELATION NOT FOUND");
         }
+    }
 
-      }
-      else if (cmdName.equals("DELETE"))
-      {
-        if (scan.next().equals("CATALOG;"))
+    public static void Delete(String cmdParams, String cmd, Scanner scan)
+    {
+        String relName = scan.next();
+
+        if (relName.equals("CATALOG;"))
         {
           System.out.println("ERROR: CANNOT DELETE RELATION (CATALOG)");
           scan.close();
           return;
         }
+
+        Relation rel = db.getRelation(relName);
+
+        if (rel != null && rel.isTemp())
+        {
+          return;
+        }
+
         String[] cmdWhereCheckArr = cmd.split(" ");
         cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length);
-        if(cmdWhereCheckArr[2].equals("WHERE")) {
+
+        if(cmdWhereCheckArr[2].equals("WHERE")) 
+        {
           DeleteWhereParser dwp = new DeleteWhereParser(cmdParams, db);
           dwp.parseDeleteTuples();
-        } else{
+        } 
+        else 
+        {
           DeleteParser dp = new DeleteParser(cmdParams);
           Relation currRel = db.getRelation(dp.parseRelationName());
 
@@ -145,38 +235,5 @@ public class LexicalAnalyzer {
             System.out.println("ERROR (DELETE): RELATION NOT FOUND");
           }
         }
-      }
-      // word is the variable name (assume good input) - MAX HANDLE ERROR HANDLING FOR BAD INPUT LATER PLEASE !!!
-      else {
-        String[] cmdWhereCheckArr = cmd.split(" ");
-        cmdWhereCheckArr = Arrays.copyOfRange(cmdWhereCheckArr, 1, cmdWhereCheckArr.length);
-        System.out.println(Arrays.toString(cmdWhereCheckArr));
-        if(cmdWhereCheckArr[2].equals("SELECT")) {
-          try {
-            if(cmdWhereCheckArr[4].equals("WHERE")) {
-              String[] newCmdParams = cmdParams.split(" ");
-              // ex: [OFFERING, WHERE, CNUM, =, CSCI241, and, SECTION, >, 27922]
-              newCmdParams = Arrays.copyOfRange(newCmdParams, 2, newCmdParams.length);
-              SelectWhereParser swp = new SelectWhereParser(newCmdParams, db, cmdWhereCheckArr[0]);
-              swp.parseAddRelation();
-
-            }
-          } catch (IndexOutOfBoundsException e) {
-            String[] newCmdParams = cmdParams.split(" ");
-            // ex: [OFFERING, WHERE, CNUM, =, CSCI241, and, SECTION, >, 27922]
-            newCmdParams = Arrays.copyOfRange(newCmdParams, 2, newCmdParams.length);
-              SelectParser sp = new SelectParser(newCmdParams, db, cmdWhereCheckArr[0]);
-              sp.parseAddRelation();
-          }
-        } else if(cmdWhereCheckArr[2].equals("PROJECT")) {
-          // run project stuff here max
-          String[] newCmdParams = cmdParams.split(" ");
-          // ex: [OFFERING, WHERE, CNUM, =, CSCI241, and, SECTION, >, 27922]
-          newCmdParams = Arrays.copyOfRange(newCmdParams, 2, newCmdParams.length);
-        }
-
-      }
-
-      scan.close();
     }
 }
