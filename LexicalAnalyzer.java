@@ -95,7 +95,8 @@ public class LexicalAnalyzer {
           }
           else if (cmdParamsArr.length > 2 && cmdParamsArr[1].equals("JOIN"))
           {
-
+            JoinParser jp = new JoinParser(Arrays.copyOfRange(cmdParamsArr, 2, cmdParamsArr.length), cmdName, db);
+            jp.joinRelations();
           }
       }
       // word is the variable name (assume good input) - MAX HANDLE ERROR HANDLING FOR BAD INPUT LATER PLEASE !!!
