@@ -77,7 +77,9 @@ public class JoinParser {
         }
 
         if (attrIndex1 < 0 || attrIndex2 < 0)
-            return;
+        {
+            db.createRelation(new Relation(this.newRel, new LinkedList<>()));
+        }
 
         if (rel1Schema.get(attrIndex1).getLength() != rel2Schema.get(attrIndex2).getLength())
             return;
